@@ -6,11 +6,17 @@
 namespace hhullen {
 
 using Str = std::string;
-using Data = std::vector<Str>;
 
 class VaultData {
  public:
-  VaultData();
+  using Data = std::vector<Str>;
+  VaultData() {
+    data.resize(5);
+    data.shrink_to_fit();
+    for (size_t i = 0; i < data.size(); ++i) {
+      data[i] = '-';
+    }
+  }
 
  private:
   Data data;

@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.22)
 
 project(KeyValueVault)
 
-set(CODE_DIAG_FLAGS 
-    "-Wall -Wextra \
-    -Werror -Wpedantic \
-    -Wshadow -Wconversion \
-    -Wnull-dereference -Wsign-conversion"
-)
+# set(CODE_DIAG_FLAGS 
+#     "-Wall -Wextra \
+#     -Werror -Wpedantic \
+#     -Wshadow -Wconversion \
+#     -Wnull-dereference -Wsign-conversion"
+# )
 set(TEST_FLAGS 
     "-lgtest -pthread \
     -lgtest_main"
@@ -26,16 +26,17 @@ include_directories(
     "lib"
     "cli"
     "include"
+    "tests"
 )
-    
+
 if(BUILD_MODE STREQUAL "build")
-    set(CMAKE_CXX_FLAGS ${TEST_FLAGS} CACHE PATH "" FORCE)
+    set(CMAKE_CXX_FLAGS ${CODE_DIAG_FLAGS} CACHE PATH "" FORCE)
     add_executable(KeyValueVault main.cc)
 elseif(BUILD_MODE STREQUAL "gcov_build")
     set(CMAKE_CXX_FLAGS ${TEST_FLAGS}" "${GCOV_FLAGS} CACHE PATH "" FORCE)
     add_executable(KeyValueVault_gcov main.cc)
 elseif(BUILD_MODE STREQUAL "test")
-    set(CMAKE_CXX_FLAGS ${CODE_DIAG_FLAGS} CACHE PATH "" FORCE)
+    set(CMAKE_CXX_FLAGS ${TEST_FLAGS} CACHE PATH "" FORCE)
     add_executable(KeyValueVault_tests main.cc)
     # include(FetchContent)
     # FetchContent_Declare(

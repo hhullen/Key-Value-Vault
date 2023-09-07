@@ -1,6 +1,5 @@
 #include <cli.cc>
 #include <iostream>
-#include <memory>
 
 using hhullen::CLI;
 using std::cerr;
@@ -14,7 +13,8 @@ int main(int argc, const char* argv[]) {
   CLI cli;
   try {
     cli.Init(argc, argv);
-    exit_code = cli.Exec();
+    cli.Exec();
+    exit_code = 0;
   } catch (const invalid_argument& ex) {
     cerr << "Input command error: " << ex.what() << "\n";
   } catch (const exception& ex) {
