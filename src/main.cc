@@ -1,4 +1,4 @@
-#include <cli.cc>
+#include <cli/cli.cc>
 #include <iostream>
 
 using hhullen::CLI;

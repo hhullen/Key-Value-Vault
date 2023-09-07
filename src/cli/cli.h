@@ -1,8 +1,8 @@
 #ifndef SRC_CLI_CLI_H_
 #define SRC_CLI_CLI_H_
 
-#include <cmd_args/cmd_args.h>
-#include <vault/engine/vault_engine.h>
+#include <include/cmd_args/cmd_args.h>
+#include <lib/vault/engine/vault_engine.h>
 
 #include <iostream>
 #include <map>

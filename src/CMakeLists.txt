@@ -2,36 +2,50 @@ cmake_minimum_required(VERSION 3.22)
 
 project(KeyValueVault)
 
-# set(CODE_DIAG_FLAGS 
-#     "-Wall -Wextra \
-#     -Werror -Wpedantic \
-#     -Wshadow -Wconversion \
-#     -Wnull-dereference -Wsign-conversion"
-# )
-set(TEST_FLAGS 
-    "-lgtest -pthread \
-    -lgtest_main"
-)
-set(GCOV_FLAGS 
-    "--coverage"
+set(CODE_DIAG_FLAGS ${CODE_DIAG_FLAGS}
+    -Wall
+    -Wextra
+    -Werror
+    -Wshadow
+    -Wpedantic
+    -Wconversion
+    -Wsign-conversion
+    -Wnull-dereference
 )
 
-set(CMAKE_CXX_COMPILER g++ CACHE PATH "" FORCE)
-set(CMAKE_CXX_STANDARD 17 CACHE PATH "" FORCE)
+set(TEST_FLAGS ${TEST_FLAGS}
+    -lgtest
+    -pthread
+    -lgtest_main
+)
+
+set(GCOV_FLAGS ${GCOV_FLAGS}
+    --coverage
+)
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17 CACHE PATH "" FORCE)
+set(CMAKE_CXX_COMPILER "g++" CACHE PATH "" FORCE)
 set(CMAKE_BUILD_TYPE Release CACHE PATH "" FORCE)
 
-# include(cli)
-include_directories(
-    "lib"
-    "cli"
-    "include"
-    "tests"
+include_directories(${CMAKE_HOME_DIRECTORY})
+
+
+set(BUILD_SOURCES ${BUILD_SOURCES} 
+    lib/vault/engine/vault_engine.cc
 )
+
+# set(GCOV_SOURCES ${GCOV_SOURCES} 
+#     lib/vault/engine/vault_engine.cc
+# )
+
+# set(TEST_SOURCES ${TEST_SOURCES} 
+#     lib/vault/engine/vault_engine.cc
+# )
 
 if(BUILD_MODE STREQUAL "build")
     set(CMAKE_CXX_FLAGS ${CODE_DIAG_FLAGS} CACHE PATH "" FORCE)
-    add_executable(KeyValueVault main.cc)
+    add_executable(KeyValueVault main.cc ${BUILD_SOURCES})
 elseif(BUILD_MODE STREQUAL "gcov_build")
     set(CMAKE_CXX_FLAGS ${TEST_FLAGS}" "${GCOV_FLAGS} CACHE PATH "" FORCE)
     add_executable(KeyValueVault_gcov main.cc)

@@ -1,6 +1,7 @@
 #ifndef SRC_LIB_VAULT_DATA_VAULT_DATA_H_
 #define SRC_LIB_VAULT_DATA_VAULT_DATA_H_
 
+#include <string>
 #include <vector>
 
 namespace hhullen {

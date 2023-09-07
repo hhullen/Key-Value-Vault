@@ -1,7 +1,7 @@
 #ifndef SRC_LIB_HASH_TABLE_HASH_TABLE_H_
 #define SRC_LIB_HASH_TABLE_HASH_TABLE_H_
 
-#include <lib/vault_interface/vault_interface.h>
+#include <lib/vault/vault_interface.h>
 
 namespace hhullen {
 

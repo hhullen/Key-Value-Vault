@@ -1,7 +1,7 @@
 #ifndef SRC_LIB_VAULT_INTERFACE_VAULT_INTERFACE_H_
 #define SRC_LIB_VAULT_INTERFACE_VAULT_INTERFACE_H_
 
-#include <vault/data_structure/vault_data.h>
+#include <lib/vault/data_structure/vault_data.h>
 
 #include <iostream>
 
@@ -14,6 +14,7 @@ using std::vector;
 
 class IVault {
  public:
+  virtual ~IVault() {}
   virtual pair<bool, Err> Set(Str key, VaultData value, size_t ex) = 0;
   virtual pair<VaultData, Err> Get(Str key) const = 0;
   virtual bool IsExists(Str key) const = 0;

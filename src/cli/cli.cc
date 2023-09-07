@@ -46,7 +46,7 @@ void CLI::SetupEngineType() {
 
 void CLI::ListenStdin() {
   Str method, arguments;
-  for (cin >> method; method != "EXIT"; cin >> method) {
+  for (cin >> method; MakeUpper(method) != "EXIT"; cin >> method) {
     if (executors_.find(MakeUpper(method)) == executors_.end()) {
       cout << "> Unknown method: \"" << method << "\"\n";
       getline(cin, method);
@@ -88,9 +88,9 @@ VaultData::Data CLI::SplitArguments(Str args) {
 }
 
 void CLI::PrintExecutionOutput() {
-  pair<Str, bool> output = engine_.Yield();
-  for (; output.second; output = engine_.Yield()) {
-    cout << output.first << "\n";
+  optional<Str> output = engine_.Yield();
+  for (; output; output = engine_.Yield()) {
+    cout << *output << "\n";
   }
 }
 
