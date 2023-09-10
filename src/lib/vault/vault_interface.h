@@ -10,7 +10,7 @@ namespace hhullen {
 using Str = std::string;
 using Err = std::exception;
 using std::pair;
-using std::vector;
+// using std::vector;
 
 class IVault {
  public:
@@ -20,11 +20,11 @@ class IVault {
   virtual bool IsExists(Str key) const = 0;
   virtual bool Delete(Str key) = 0;
   virtual pair<bool, Err> Update(Str key, VaultData value, size_t ex) = 0;
-  virtual vector<Str> GetKeys() const = 0;
+  virtual /* vector<Str> iterator */ GetKeys() const = 0;
   virtual pair<bool, Err> Rename(Str key_old, Str key_new) = 0;
   virtual pair<size_t, Err> GetTTL(Str key) const = 0;
-  virtual vector<Str> Find(VaultData value) const = 0;
-  virtual vector<VaultData> ShowAll() const = 0;
+  virtual /* vector<Str> iterator */ Find(VaultData value) const = 0;
+  virtual /* vector<VaultData> iterator */ ShowAll() const = 0;
   virtual pair<size_t, Err> Upload(Str file_path) = 0;
   virtual pair<size_t, Err> Export(Str file_path) const = 0;
 };

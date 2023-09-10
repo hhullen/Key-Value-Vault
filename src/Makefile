@@ -8,9 +8,9 @@ CPPCH_SETUP= \
 CHECK_FILES=$ \
 			cli/*.h \
 			cli/*.cc \
-			main.cc \
-			tests/*.h \
-			tests/*.cc \
+			main.cc   \
+			tests/*.h  \
+			tests/*.cc  \
 			lib/bin_tree/*.h \
 			lib/bin_tree/*.cc \
 			lib/hash_table/*.h \
@@ -19,7 +19,7 @@ CHECK_FILES=$ \
 			lib/vault/engine/*.cc \
 			lib/vault/data_structure/*.h \
 			lib/vault/data_structure/*.cc \
-
+			lib/vault/engine/channel/channel.h \
 TO_DELETE_FILES=*.o *.a *.out *.dSYM *.gch *.gcda \
 				*.gcno .DS_Store $(CLANG_FILE) *.info
 TO_DELETE_FOLDERS=$(BUILD_DIR) report *.dSYM

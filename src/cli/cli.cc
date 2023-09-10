@@ -4,6 +4,13 @@ namespace hhullen {
 
 CLI::CLI() {}
 
+CLI::~CLI() {
+  engine_.StopStreaming();
+  if (stream_thread_.joinable()) {
+    stream_thread_.join();
+  }
+}
+
 void CLI::Init(int argc, const char* argv[]) {
   Argument vault_type("vault type", Argument::Type::String);
   cmd_line_.AddArguments({vault_type});
@@ -28,6 +35,7 @@ void CLI::SetupExecutors() {
 
 void CLI::Exec() {
   SetupEngineType();
+  stream_thread_ = Thread(&CLI::RunStdoutStreaming, this);
   ListenStdin();
 }
 
@@ -46,52 +54,32 @@ void CLI::SetupEngineType() {
 
 void CLI::ListenStdin() {
   Str method, arguments;
-  for (cin >> method; MakeUpper(method) != "EXIT"; cin >> method) {
-    if (executors_.find(MakeUpper(method)) == executors_.end()) {
+  cin >> method;
+  StrPlus::MakeUpper(method);
+  for (; method != "EXIT"; cin >> method) {
+    StrPlus::MakeUpper(method);
+    if (executors_.find(method) == executors_.end()) {
       cout << "> Unknown method: \"" << method << "\"\n";
       getline(cin, method);
       continue;
     }
     getline(cin, arguments);
     ExecuteMethod(method, arguments);
-    PrintExecutionOutput();
   }
-}
-
-Str CLI::MakeUpper(Str str) {
-  for (size_t i = 0; i < str.size(); ++i) {
-    str[i] = std::toupper(str[i]);
-  }
-  return str;
+  std::cout << "END LISTENING\n";
 }
 
 void CLI::ExecuteMethod(Str method, Str arguments) {
-  VaultData::Data payload = SplitArguments(arguments);
+  VaultData::Row payload = StrPlus::Split(arguments, ' ');
   (engine_.*(executors_[method]))(payload);
 }
 
-VaultData::Data CLI::SplitArguments(Str args) {
-  VaultData::Data arg_list;
-  size_t size = args.size();
-  for (size_t i = 0; i < size; ++i) {
-    if (args[i] != ' ') {
-      char* token_start_ptr = &(args.data())[i];
-      for (; i < size && args[i] != ' '; ++i) {
-      }
-      if (i < size) {
-        args[i] = '\0';
-      }
-      arg_list.emplace_back(Str(token_start_ptr));
-    }
-  }
-  return arg_list;
-}
-
-void CLI::PrintExecutionOutput() {
+void CLI::RunStdoutStreaming() {
   optional<Str> output = engine_.Yield();
   for (; output; output = engine_.Yield()) {
     cout << *output << "\n";
   }
+  std::cout << "END STREAMING\n";
 }
 
 }  // namespace hhullen

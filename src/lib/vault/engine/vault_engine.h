@@ -3,6 +3,7 @@
 
 #include <lib/bin_tree/bin_tree.h>
 #include <lib/hash_table/hash_table.h>
+#include <lib/vault/engine/channel/channel.h>
 #include <lib/vault/vault_interface.h>
 
 #include <memory>
@@ -16,30 +17,38 @@ class VaultEngine {
 
  public:
   VaultEngine() {}
+  ~VaultEngine() {}
 
   enum VaultType { BIN_TREE, HASH_TABLE };
   void Init(VaultType vault_type);
 
-  void ExecuteSet(vector<Str> arguments) { std::cout << "SET execution\n"; }
-  void ExecuteGet(vector<Str> arguments) {}
-  void ExecuteExists(vector<Str> arguments) {}
-  void ExecuteDelete(vector<Str> arguments) {}
-  void ExecuteUpdate(vector<Str> arguments) {}
-  void ExecuteKeys(vector<Str> arguments) {}
-  void ExecuteRename(vector<Str> arguments) {}
-  void ExecuteTTL(vector<Str> arguments) {}
-  void ExecuteFind(vector<Str> arguments) {}
-  void ExecuteShowAll(vector<Str> arguments) {}
-  void ExecuteUpload(vector<Str> arguments) {}
-  void ExecuteExport(vector<Str> arguments) {}
+  void ExecuteSet(VaultData::Row &arguments) {
+    output_stream_.Send("SEND METHOD WORKS");
+  }
+  void ExecuteGet(VaultData::Row &arguments) {}
+  void ExecuteExists(VaultData::Row &arguments) {}
+  void ExecuteDelete(VaultData::Row &arguments) {}
+  void ExecuteUpdate(VaultData::Row &arguments) {}
+  void ExecuteKeys(VaultData::Row &arguments) {}
+  void ExecuteRename(VaultData::Row &arguments) {}
+  void ExecuteTTL(VaultData::Row &arguments) {}
+  void ExecuteFind(VaultData::Row &arguments) {}
+  void ExecuteShowAll(VaultData::Row &arguments) {}
+  void ExecuteUpload(VaultData::Row &arguments) {}
+  void ExecuteExport(VaultData::Row &arguments) {}
 
   optional<Str> Yield() {
-    // return Str("Die! Mutherfucker Die!");
+    if (output_stream_) {
+      return output_stream_.Get();
+    }
     return {};
   }
 
+  void StopStreaming() { output_stream_.Close(); }
+
  private:
   VaultPtr vault;
+  Channel<Str> output_stream_;
 };
 
 }  // namespace hhullen

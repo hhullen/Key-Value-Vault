@@ -1,11 +1,13 @@
 #ifndef SRC_CLI_CLI_H_
 #define SRC_CLI_CLI_H_
 
+#include <include/StrPlus/str_plus.h>
 #include <include/cmd_args/cmd_args.h>
 #include <lib/vault/engine/vault_engine.h>
 
 #include <iostream>
 #include <map>
+#include <thread>
 
 using std::cin;
 using std::cout;
@@ -15,11 +17,12 @@ using std::invalid_argument;
 namespace hhullen {
 
 class CLI {
-  using Executors = std::map<Str, void (VaultEngine::*)(VaultData::Data)>;
+  using Executors = std::map<Str, void (VaultEngine::*)(VaultData::Row)>;
+  using Thread = std::thread;
 
  public:
   CLI();
-  ~CLI() {}
+  ~CLI();
   void Init(int argc, const char* argv[]);
   void Exec();
 
@@ -27,14 +30,13 @@ class CLI {
   CMDArgs cmd_line_;
   Executors executors_;
   VaultEngine engine_;
+  Thread stream_thread_;
 
   void SetupExecutors();
   void SetupEngineType();
   void ListenStdin();
-  Str MakeUpper(Str str);
   void ExecuteMethod(Str method, Str arguments);
-  VaultData::Data SplitArguments(Str command);
-  void PrintExecutionOutput();
+  void RunStdoutStreaming();
 };
 
 }  // namespace hhullen

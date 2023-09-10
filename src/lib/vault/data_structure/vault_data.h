@@ -10,17 +10,14 @@ using Str = std::string;
 
 class VaultData {
  public:
-  using Data = std::vector<Str>;
+  using Row = std::vector<Str>;
   VaultData() {
-    data.resize(5);
-    data.shrink_to_fit();
-    for (size_t i = 0; i < data.size(); ++i) {
-      data[i] = '-';
-    }
+    row.resize(5, "-");
+    row.shrink_to_fit();
   }
 
  private:
-  Data data;
+  Row row;
 };
 
 }  // namespace hhullen
