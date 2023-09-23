@@ -17,9 +17,9 @@ using RegEx = std::regex;
 
 enum class Type { Int, UInt, Float };
 const std::map<Type, RegEx> regex_{
-    {Type::Int, RegEx("^[-]{0,1}[0-9]+e[+-][0-9]+$")},
-    {Type::UInt, RegEx("^[0-9]+e[+-][0-9]+$")},
-    {Type::Float, RegEx("^[-]{0,1}[0-9]+\\.[0-9]+e[+-][0-9]+$")},
+    {Type::Int, RegEx("^[-]{0,1}[0-9]+(e[+-][0-9]+){0,1}$")},
+    {Type::UInt, RegEx("^[0-9]+(e[+-][0-9]+){0,1}$")},
+    {Type::Float, RegEx("^[-]{0,1}[0-9]+\\.[0-9]+(e[+-][0-9]+){0,1}$")},
 };
 
 StrList Split(const Str &src, char delimiter);

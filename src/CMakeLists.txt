@@ -3,14 +3,10 @@ cmake_minimum_required(VERSION 3.22)
 project(KeyValueVault)
 
 # set(CODE_DIAG_FLAGS ${CODE_DIAG_FLAGS}
-#     "-Wall  \
-#     -Wextra  \
-#     -Werror   \
-#     -Wshadow   \
-#     -Wpedantic  \
-#     -Wconversion \
-#     -Wsign-conversion \
-#     -Wnull-dereference"
+#   --all-warnings --extra-warnings -Werror -Wpedantic -Wshadow \
+#   -Wdiv-by-zero -Wcomment -Wdeprecated -Wdouble-promotion -Winline \
+#   -Wconversion -Wdangling-else -Wnull-dereference -Wsign-conversion  \
+#   -Wunused-variable -Wunused-value -Wformat-security
 # )
 
 set(TEST_FLAGS ${TEST_FLAGS}
@@ -33,6 +29,7 @@ include_directories(${CMAKE_HOME_DIRECTORY})
 
 set(BUILD_SOURCES ${BUILD_SOURCES} 
     lib/vault/engine/vault_engine.cc
+    lib/bin_tree/bin_tree.cc
     include/StrPlus/str_plus.cc
 )
 

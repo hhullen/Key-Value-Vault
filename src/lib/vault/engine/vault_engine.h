@@ -6,6 +6,8 @@
 #include <lib/vault/engine/channel/channel.h>
 #include <lib/vault/vault_interface.h>
 
+#include <chrono>
+#include <map>
 #include <memory>
 #include <optional>
 
@@ -22,33 +24,29 @@ class VaultEngine {
   enum VaultType { BIN_TREE, HASH_TABLE };
   void Init(VaultType vault_type);
 
-  void ExecuteSet(VaultData::Row &arguments) {
-    output_stream_.Send("SEND METHOD WORKS");
-  }
-  void ExecuteGet(VaultData::Row &arguments) {}
-  void ExecuteExists(VaultData::Row &arguments) {}
-  void ExecuteDelete(VaultData::Row &arguments) {}
-  void ExecuteUpdate(VaultData::Row &arguments) {}
-  void ExecuteKeys(VaultData::Row &arguments) {}
-  void ExecuteRename(VaultData::Row &arguments) {}
-  void ExecuteTTL(VaultData::Row &arguments) {}
-  void ExecuteFind(VaultData::Row &arguments) {}
-  void ExecuteShowAll(VaultData::Row &arguments) {}
-  void ExecuteUpload(VaultData::Row &arguments) {}
-  void ExecuteExport(VaultData::Row &arguments) {}
-
-  optional<Str> Yield() {
-    if (output_stream_) {
-      return output_stream_.Get();
-    }
-    return {};
-  }
-
-  void StopStreaming() { output_stream_.Close(); }
+  void ExecuteSet(vector<Str> &arguments);
+  void ExecuteGet(vector<Str> &arguments);
+  void ExecuteExists(vector<Str> &arguments) {}
+  void ExecuteDelete(vector<Str> &arguments) {}
+  void ExecuteUpdate(vector<Str> &arguments) {}
+  void ExecuteKeys(vector<Str> &arguments) {}
+  void ExecuteRename(vector<Str> &arguments) {}
+  void ExecuteTTL(vector<Str> &arguments) {}
+  void ExecuteFind(vector<Str> &arguments) {}
+  void ExecuteShowAll(vector<Str> &arguments) {}
+  void ExecuteUpload(vector<Str> &arguments) {}
+  void ExecuteExport(vector<Str> &arguments) {}
+  optional<Str> Yield();
+  void StopStreaming();
 
  private:
-  VaultPtr vault;
+  VaultPtr vault_;
   Channel<Str> output_stream_;
+
+  Str GetVaultData(VaultData &data);
+  pair<size_t, Str> ReadLifeTime(vector<Str> &arguments);
+  void SendError(const Str &message);
+  void SendExecutionResult(const Str &message);
 };
 
 }  // namespace hhullen

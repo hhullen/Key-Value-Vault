@@ -8,7 +8,7 @@
 
 namespace hhullen {
 
-template <class T>
+template <class Type>
 class Channel {
  public:
   ~Channel() {
@@ -18,31 +18,31 @@ class Channel {
 
   operator bool() const { return !closed_; }
 
-  void Send(T item) {
+  void Send(Type item) {
     std::unique_lock<decltype(mutex_)> locker(mutex_);
     buffer_.emplace(item);
     condition_.notify_one();
   }
 
-  T Get() {
+  Type Get() {
     std::unique_lock<decltype(mutex_)> locker(mutex_);
     condition_.wait(locker, [this]() { return !buffer_.empty(); });
     if (!closed_) {
-      T item = buffer_.front();
+      Type item = buffer_.front();
       buffer_.pop();
       return item;
     }
-    return T();
+    return Type();
   }
 
   void Close() {
     closed_ = true;
-    buffer_.emplace(T());
+    buffer_.emplace(Type());
     condition_.notify_one();
   }
 
  private:
-  std::queue<T> buffer_;
+  std::queue<Type> buffer_;
   std::mutex mutex_;
   std::condition_variable condition_;
   std::atomic<bool> closed_{false};

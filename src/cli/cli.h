@@ -17,7 +17,7 @@ using std::invalid_argument;
 namespace hhullen {
 
 class CLI {
-  using Executors = std::map<Str, void (VaultEngine::*)(VaultData::Row)>;
+  using Executors = std::map<Str, void (VaultEngine::*)(vector<Str>&)>;
   using Thread = std::thread;
 
  public:

@@ -56,11 +56,10 @@ void CLI::ListenStdin() {
   Str method, arguments;
   cin >> method;
   StrPlus::MakeUpper(method);
-  for (; method != "EXIT"; cin >> method) {
-    StrPlus::MakeUpper(method);
+  for (; method != "EXIT"; cin >> method, StrPlus::MakeUpper(method)) {
     if (executors_.find(method) == executors_.end()) {
       cout << "> Unknown method: \"" << method << "\"\n";
-      getline(cin, method);
+      getline(cin, arguments);
       continue;
     }
     getline(cin, arguments);
@@ -70,7 +69,7 @@ void CLI::ListenStdin() {
 }
 
 void CLI::ExecuteMethod(Str method, Str arguments) {
-  VaultData::Row payload = StrPlus::Split(arguments, ' ');
+  vector<Str> payload = StrPlus::Split(arguments, ' ');
   (engine_.*(executors_[method]))(payload);
 }
 

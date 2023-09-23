@@ -6,7 +6,6 @@ using std::cerr;
 using std::cout;
 using std::exception;
 using std::invalid_argument;
-using std::string;
 
 int main(int argc, const char* argv[]) {
   int exit_code = 1;
