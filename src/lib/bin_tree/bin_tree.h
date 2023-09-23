@@ -20,16 +20,16 @@ class SelfBalancingBinarySearchTree : public IVault {
  public:
   Str Set(Str key, VaultData value);
   pair<VaultData, Str> Get(Str key);
-  bool IsExists(Str key) const;
+  bool IsExists(Str key);
   bool Delete(Str key);
   Str Update(Str key, VaultData value);
-  void GetKeys(Channel<Str>& out) const;
+  void GetKeys(Channel<Str>& out);
   Str Rename(Str key_old, Str key_new);
-  pair<size_t, Str> GetTTL(Str key) const;
-  void Find(Channel<Str>& out, VaultData value) const;
-  void ShowAll(Channel<Str>& out) const;
+  pair<size_t, Str> GetTTL(Str key);
+  void Find(Channel<Str>& out, VaultData value);
+  void ShowAll(Channel<Str>& out);
   pair<size_t, Str> Upload(Str file_path);
-  pair<size_t, Str> Export(Str file_path) const;
+  pair<size_t, Str> Export(Str file_path);
 
  private:
   Container container_;

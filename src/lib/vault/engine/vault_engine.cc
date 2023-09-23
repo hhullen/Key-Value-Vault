@@ -16,24 +16,21 @@ void VaultEngine::ExecuteSet(vector<Str>& arguments) {
     return;
   }
 
-  const Str& key = arguments[0];
-  VaultData payload;
-  for (size_t i = 1; i < arguments.size() && i - 1 < VaultData::kMaxFields;
-       ++i) {
-    Str err = payload.SetField(i - 1, arguments[i]);
-    if (err != "") {
-      SendError(err);
-      return;
-    }
+  pair<VaultData, Str> payload = ReadPayload(arguments);
+  if (payload.second != "") {
+    SendError(payload.second);
+    return;
   }
+
   pair<size_t, Str> life_time = ReadLifeTime(arguments);
   if (life_time.second != "") {
     SendError(life_time.second);
     return;
   }
-  payload.SetDeathTimeMark(life_time.first);
+  payload.first.SetDeathTimeMark(life_time.first);
 
-  Str err = vault_->Set(key, payload);
+  const Str& key = arguments[0];
+  Str err = vault_->Set(key, payload.first);
   if (err != "") {
     SendError(err);
   } else {
@@ -58,6 +55,66 @@ void VaultEngine::ExecuteGet(vector<Str>& arguments) {
   }
 }
 
+void VaultEngine::ExecuteExists(vector<Str>& arguments) {
+  if (arguments.size() < 1) {
+    SendError("no keys have been specified");
+    return;
+  }
+
+  for (size_t i = 0; i < arguments.size(); ++i) {
+    const Str& key = arguments[i];
+    if (vault_->IsExists(key)) {
+      SendExecutionResult("true");
+    } else {
+      SendExecutionResult("false");
+    }
+  }
+}
+
+void VaultEngine::ExecuteDelete(vector<Str>& arguments) {
+  if (arguments.size() < 1) {
+    SendError("no keys have been specified");
+    return;
+  }
+
+  for (size_t i = 0; i < arguments.size(); ++i) {
+    const Str& key = arguments[i];
+    if (vault_->Delete(key)) {
+      SendExecutionResult("true");
+    } else {
+      SendExecutionResult("false");
+    }
+  }
+}
+
+void VaultEngine::ExecuteUpdate(vector<Str>& arguments) {
+  if (arguments.size() < 2) {
+    SendError("No key or at least one value field filled.");
+    return;
+  }
+
+  pair<VaultData, Str> payload = ReadPayload(arguments);
+  if (payload.second != "") {
+    SendError(payload.second);
+    return;
+  }
+
+  pair<size_t, Str> life_time = ReadLifeTime(arguments);
+  if (life_time.second != "") {
+    SendError(life_time.second);
+    return;
+  }
+  payload.first.SetDeathTimeMark(life_time.first);
+
+  const Str& key = arguments[0];
+  Str err = vault_->Update(key, payload.first);
+  if (err != "") {
+    SendError(err);
+  } else {
+    SendExecutionResult("OK");
+  }
+}
+
 optional<Str> VaultEngine::Yield() {
   if (output_stream_) {
     return output_stream_.Get();
@@ -67,12 +124,28 @@ optional<Str> VaultEngine::Yield() {
 
 void VaultEngine::StopStreaming() { output_stream_.Close(); }
 
+// /*
+//     private methods
+// */
+
 Str VaultEngine::GetVaultData(VaultData& data) {
   Str data_str;
   for (size_t i = 0; i < VaultData::kMaxFields; ++i) {
-    data_str += data.GetField(i) + " ";
+    data_str += data.GetField(i) + "\t";
   }
   return data_str;
+}
+
+pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments) {
+  VaultData payload;
+  for (size_t i = 1; i < arguments.size() && i - 1 < VaultData::kMaxFields;
+       ++i) {
+    Str err = payload.SetField(i - 1, arguments[i]);
+    if (err != "") {
+      return pair<VaultData, Str>(payload, err);
+    }
+  }
+  return pair<VaultData, Str>(payload, Str());
 }
 
 pair<size_t, Str> VaultEngine::ReadLifeTime(vector<Str>& arguments) {

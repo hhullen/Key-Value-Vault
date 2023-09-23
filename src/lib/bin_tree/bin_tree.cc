@@ -18,34 +18,46 @@ pair<VaultData, Str> SelfBalancingBinarySearchTree::Get(Str key) {
   return pair<VaultData, Str>((*iter).second, Str());
 }
 
-bool SelfBalancingBinarySearchTree::IsExists(Str key) const { return true; }
+bool SelfBalancingBinarySearchTree::IsExists(Str key) {
+  return container_.Contains(key);
+}
 
-bool SelfBalancingBinarySearchTree::Delete(Str key) { return true; }
+bool SelfBalancingBinarySearchTree::Delete(Str key) {
+  if (!container_.Contains(key)) {
+    return false;
+  }
+  container_.Delete(key);
+  return true;
+}
 
 hhullen::Str SelfBalancingBinarySearchTree::Update(Str key, VaultData value) {
+  Container::Iterator iter = container_.Find(key);
+  if (iter == container_.End()) {
+    return Str("value with the key \"" + key + "\" does not exists.");
+  }
+  container_.Emplace({key, value});
   return Str();
 }
 
-void SelfBalancingBinarySearchTree::GetKeys(Channel<Str>& out) const {}
+void SelfBalancingBinarySearchTree::GetKeys(Channel<Str>& out) {}
 
 hhullen::Str SelfBalancingBinarySearchTree::Rename(Str key_old, Str key_new) {
   return Str();
 }
 
-pair<size_t, Str> SelfBalancingBinarySearchTree::GetTTL(Str key) const {
+pair<size_t, Str> SelfBalancingBinarySearchTree::GetTTL(Str key) {
   return pair<size_t, Str>();
 }
 
-void SelfBalancingBinarySearchTree::Find(Channel<Str>& out,
-                                         VaultData value) const {}
+void SelfBalancingBinarySearchTree::Find(Channel<Str>& out, VaultData value) {}
 
-void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) const {}
+void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) {}
 
 pair<size_t, Str> SelfBalancingBinarySearchTree::Upload(Str file_path) {
   return pair<size_t, Str>();
 }
 
-pair<size_t, Str> SelfBalancingBinarySearchTree::Export(Str file_path) const {
+pair<size_t, Str> SelfBalancingBinarySearchTree::Export(Str file_path) {
   return pair<size_t, Str>();
 }
 

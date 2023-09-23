@@ -43,6 +43,12 @@ class VaultData {
 
   Str GetField(const size_t idx) { return row_[idx]; }
 
+  VaultData& operator=(const VaultData& src) {
+    for (size_t i = 0; i < kMaxFields; ++i) {
+      // if
+    }
+  }
+
  private:
   vector<Str> row_;
   size_t time_mark_;

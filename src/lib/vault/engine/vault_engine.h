@@ -6,7 +6,6 @@
 #include <lib/vault/engine/channel/channel.h>
 #include <lib/vault/vault_interface.h>
 
-#include <chrono>
 #include <map>
 #include <memory>
 #include <optional>
@@ -26,9 +25,9 @@ class VaultEngine {
 
   void ExecuteSet(vector<Str> &arguments);
   void ExecuteGet(vector<Str> &arguments);
-  void ExecuteExists(vector<Str> &arguments) {}
-  void ExecuteDelete(vector<Str> &arguments) {}
-  void ExecuteUpdate(vector<Str> &arguments) {}
+  void ExecuteExists(vector<Str> &arguments);
+  void ExecuteDelete(vector<Str> &arguments);
+  void ExecuteUpdate(vector<Str> &arguments);
   void ExecuteKeys(vector<Str> &arguments) {}
   void ExecuteRename(vector<Str> &arguments) {}
   void ExecuteTTL(vector<Str> &arguments) {}
@@ -44,6 +43,7 @@ class VaultEngine {
   Channel<Str> output_stream_;
 
   Str GetVaultData(VaultData &data);
+  pair<VaultData, Str> ReadPayload(vector<Str> &arguments);
   pair<size_t, Str> ReadLifeTime(vector<Str> &arguments);
   void SendError(const Str &message);
   void SendExecutionResult(const Str &message);
