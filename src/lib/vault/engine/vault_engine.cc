@@ -16,21 +16,14 @@ void VaultEngine::ExecuteSet(vector<Str>& arguments) {
     return;
   }
 
-  pair<VaultData, Str> payload = ReadPayload(arguments);
-  if (payload.second != "") {
-    SendError(payload.second);
+  pair<VaultData, Str> vault_data = AssembleVaultData(arguments);
+  if (vault_data.second != "") {
+    SendError(vault_data.second);
     return;
   }
-
-  pair<size_t, Str> life_time = ReadLifeTime(arguments);
-  if (life_time.second != "") {
-    SendError(life_time.second);
-    return;
-  }
-  payload.first.SetDeathTimeMark(life_time.first);
 
   const Str& key = arguments[0];
-  Str err = vault_->Set(key, payload.first);
+  Str err = vault_->Set(key, vault_data.first);
   if (err != "") {
     SendError(err);
   } else {
@@ -50,7 +43,7 @@ void VaultEngine::ExecuteGet(vector<Str>& arguments) {
     if (found.second != "") {
       SendExecutionResult(found.second);
     } else {
-      SendExecutionResult(GetVaultData(found.first));
+      SendExecutionResult(found.first.GetRowAsString());
     }
   }
 }
@@ -93,21 +86,33 @@ void VaultEngine::ExecuteUpdate(vector<Str>& arguments) {
     return;
   }
 
-  pair<VaultData, Str> payload = ReadPayload(arguments);
-  if (payload.second != "") {
-    SendError(payload.second);
+  pair<VaultData, Str> vault_data = AssembleVaultData(arguments);
+  if (vault_data.second != "") {
+    SendError(vault_data.second);
     return;
   }
-
-  pair<size_t, Str> life_time = ReadLifeTime(arguments);
-  if (life_time.second != "") {
-    SendError(life_time.second);
-    return;
-  }
-  payload.first.SetDeathTimeMark(life_time.first);
 
   const Str& key = arguments[0];
-  Str err = vault_->Update(key, payload.first);
+  Str err = vault_->Update(key, vault_data.first);
+  if (err != "") {
+    SendError(err);
+  } else {
+    SendExecutionResult("OK");
+  }
+}
+
+void VaultEngine::ExecuteKeys(vector<Str>& arguments) {
+  vault_->GetKeys(output_stream_);
+}
+
+void VaultEngine::ExecuteRename(vector<Str>& arguments) {
+  if (arguments.size() < 2) {
+    SendError("keys to be renamed and to rename have not been specified.");
+    return;
+  }
+  const Str& key_to_be_renamed = arguments[0];
+  const Str& key_renamer = arguments[1];
+  Str err = vault_->Rename(key_to_be_renamed, key_renamer);
   if (err != "") {
     SendError(err);
   } else {
@@ -128,12 +133,19 @@ void VaultEngine::StopStreaming() { output_stream_.Close(); }
 //     private methods
 // */
 
-Str VaultEngine::GetVaultData(VaultData& data) {
-  Str data_str;
-  for (size_t i = 0; i < VaultData::kMaxFields; ++i) {
-    data_str += data.GetField(i) + "\t";
+pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
+  pair<VaultData, Str> payload = ReadPayload(arguments);
+  if (payload.second != "") {
+    return payload;
   }
-  return data_str;
+
+  pair<size_t, Str> life_time = ReadLifeTime(arguments);
+  if (life_time.second != "") {
+    return pair<VaultData, Str>(VaultData(), life_time.second);
+  }
+  payload.first.SetDeathTimeMark(life_time.first);
+
+  return payload;
 }
 
 pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments) {

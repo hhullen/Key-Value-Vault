@@ -31,17 +31,30 @@ bool SelfBalancingBinarySearchTree::Delete(Str key) {
 }
 
 hhullen::Str SelfBalancingBinarySearchTree::Update(Str key, VaultData value) {
-  Container::Iterator iter = container_.Find(key);
-  if (iter == container_.End()) {
+  if (!container_.Contains(key)) {
     return Str("value with the key \"" + key + "\" does not exists.");
   }
   container_.Emplace({key, value});
   return Str();
 }
 
-void SelfBalancingBinarySearchTree::GetKeys(Channel<Str>& out) {}
+void SelfBalancingBinarySearchTree::GetKeys(Channel<Str>& out) {
+  Container::Iterator iter = container_.Begin();
+  for (; iter != container_.End(); ++iter) {
+    out.Send((*iter).first);
+  }
+}
 
 hhullen::Str SelfBalancingBinarySearchTree::Rename(Str key_old, Str key_new) {
+  Container::Iterator iter = container_.Find(key_old);
+  if (iter == container_.End()) {
+    return Str("value with the key \"" + key_old + "\" does not exists.");
+  }
+  if (container_.Contains(key_new)) {
+    return Str("value with the key \"" + key_new + "\" already exists.");
+  }
+  container_.Emplace({key_new, (*iter).second});
+  container_.Delete(key_old);
   return Str();
 }
 

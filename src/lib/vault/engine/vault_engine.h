@@ -28,8 +28,8 @@ class VaultEngine {
   void ExecuteExists(vector<Str> &arguments);
   void ExecuteDelete(vector<Str> &arguments);
   void ExecuteUpdate(vector<Str> &arguments);
-  void ExecuteKeys(vector<Str> &arguments) {}
-  void ExecuteRename(vector<Str> &arguments) {}
+  void ExecuteKeys(vector<Str> &arguments);
+  void ExecuteRename(vector<Str> &arguments);
   void ExecuteTTL(vector<Str> &arguments) {}
   void ExecuteFind(vector<Str> &arguments) {}
   void ExecuteShowAll(vector<Str> &arguments) {}
@@ -42,7 +42,7 @@ class VaultEngine {
   VaultPtr vault_;
   Channel<Str> output_stream_;
 
-  Str GetVaultData(VaultData &data);
+  pair<VaultData, Str> AssembleVaultData(vector<Str> &arguments);
   pair<VaultData, Str> ReadPayload(vector<Str> &arguments);
   pair<size_t, Str> ReadLifeTime(vector<Str> &arguments);
   void SendError(const Str &message);

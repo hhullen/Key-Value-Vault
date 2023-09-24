@@ -34,7 +34,7 @@ class VaultData {
       return Str("unable to cast value \"" + value + "\" to type uint.");
     }
     row_[idx] = value;
-    return Str("");
+    return Str();
   }
 
   void SetDeathTimeMark(size_t seconds) { time_mark_ = seconds; }
@@ -45,8 +45,21 @@ class VaultData {
 
   VaultData& operator=(const VaultData& src) {
     for (size_t i = 0; i < kMaxFields; ++i) {
-      // if
+      if (src.row_[i] != "-") {
+        row_[i] = src.row_[i];
+      }
     }
+    return *this;
+  }
+
+  bool operator==(const VaultData& src) { return true; }
+
+  Str GetRowAsString(char sep = '\t') {
+    Str data_str;
+    for (size_t i = 0; i < VaultData::kMaxFields; ++i) {
+      data_str += row_[i] + sep;
+    }
+    return data_str;
   }
 
  private:
