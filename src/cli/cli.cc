@@ -65,7 +65,7 @@ void CLI::ListenStdin() {
     getline(cin, arguments);
     ExecuteMethod(method, arguments);
   }
-  std::cout << "END LISTENING\n";
+  std::cout << "END LISTENING CORRECTLY";
 }
 
 void CLI::ExecuteMethod(Str method, Str arguments) {
@@ -78,7 +78,7 @@ void CLI::RunStdoutStreaming() {
   for (; output; output = engine_.Yield()) {
     cout << *output << "\n";
   }
-  std::cout << "END STREAMING\n";
+  std::cout << "END STREAMING  CORRECTLY\n";
 }
 
 }  // namespace hhullen

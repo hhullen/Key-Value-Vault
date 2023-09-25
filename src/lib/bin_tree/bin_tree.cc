@@ -102,10 +102,7 @@ void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) {
   if (iter != container_.End()) {
     size_t timemark = static_cast<size_t>((*iter).second.GetDeathTimeMark());
     if (!IsExpired(timemark)) {
-      out.Send(
-          "> №  |   Фамилия   |     Имя     |     Год     |    Город    |  "
-          "Количество "
-          "коинов  |");
+      out.Send(VaultData::kHeader);
     }
   }
   for (size_t i = 1; iter != container_.End();) {

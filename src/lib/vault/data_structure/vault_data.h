@@ -14,6 +14,9 @@ using std::vector;
 
 class VaultData {
  public:
+  static constexpr char kHeader[] =
+      "> №  |   Фамилия   |     Имя     |     Год     |    Город    |  "
+      "Количество коинов  |";
   static constexpr int kMaxFields = 5;
   VaultData() : time_mark_(0) {
     row_.resize(kMaxFields, "-");
