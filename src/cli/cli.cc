@@ -23,6 +23,7 @@ void CLI::SetupExecutors() {
   executors_["GET"] = &VaultEngine::ExecuteGet;
   executors_["EXISTS"] = &VaultEngine::ExecuteExists;
   executors_["DEL"] = &VaultEngine::ExecuteDelete;
+  executors_["DELETE"] = &VaultEngine::ExecuteDelete;
   executors_["UPDATE"] = &VaultEngine::ExecuteUpdate;
   executors_["KEYS"] = &VaultEngine::ExecuteKeys;
   executors_["RENAME"] = &VaultEngine::ExecuteRename;
