@@ -15,13 +15,11 @@ void VaultEngine::ExecuteSet(vector<Str>& arguments) {
     SendError("No key or at least one value field filled.");
     return;
   }
-
   pair<VaultData, Str> vault_data = AssembleVaultData(arguments);
   if (vault_data.second != "") {
     SendError(vault_data.second);
     return;
   }
-
   const Str& key = arguments[0];
   Str err = vault_->Set(key, vault_data.first);
   if (err != "") {
@@ -36,7 +34,6 @@ void VaultEngine::ExecuteGet(vector<Str>& arguments) {
     SendError("no keys have been specified");
     return;
   }
-
   for (size_t i = 0; i < arguments.size(); ++i) {
     const Str& key = arguments[i];
     pair<VaultData, Str> found = vault_->Get(key);
@@ -53,7 +50,6 @@ void VaultEngine::ExecuteExists(vector<Str>& arguments) {
     SendError("no keys have been specified");
     return;
   }
-
   for (size_t i = 0; i < arguments.size(); ++i) {
     const Str& key = arguments[i];
     if (vault_->IsExists(key)) {
@@ -69,7 +65,6 @@ void VaultEngine::ExecuteDelete(vector<Str>& arguments) {
     SendError("no keys have been specified");
     return;
   }
-
   for (size_t i = 0; i < arguments.size(); ++i) {
     const Str& key = arguments[i];
     if (vault_->Delete(key)) {
@@ -85,13 +80,11 @@ void VaultEngine::ExecuteUpdate(vector<Str>& arguments) {
     SendError("No key or at least one value field filled.");
     return;
   }
-
   pair<VaultData, Str> vault_data = AssembleVaultData(arguments);
   if (vault_data.second != "") {
     SendError(vault_data.second);
     return;
   }
-
   const Str& key = arguments[0];
   Str err = vault_->Update(key, vault_data.first);
   if (err != "") {
@@ -176,7 +169,6 @@ pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
   if (payload.second != "") {
     return payload;
   }
-
   pair<size_t, Str> life_time = ReadLifeTime(arguments);
   if (life_time.second != "") {
     return pair<VaultData, Str>(VaultData(), life_time.second);

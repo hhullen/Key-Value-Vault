@@ -47,10 +47,9 @@ void SelfBalancingBinarySearchTree::GetKeys(Channel<Str>& out) {
       iter = container_.Delete((*iter).first);
       continue;
     }
-
     out.Send(Str(std::to_string(i) + ") ") + (*iter).first);
-    ++i;
     ++iter;
+    ++i;
   }
 }
 
@@ -105,7 +104,6 @@ void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) {
           "коинов  |");
     }
   }
-
   for (size_t i = 1; iter != container_.End();) {
     size_t timemark = static_cast<size_t>((*iter).second.GetDeathTimeMark());
     if (IsExpired(timemark)) {
@@ -137,13 +135,11 @@ SelfBalancingBinarySearchTree::GetIfExistsOrAlive(const Str& key) {
   if (iter == container_.End()) {
     return iter;
   }
-
   size_t timemark = (*iter).second.GetDeathTimeMark();
   if (IsExpired(timemark)) {
     container_.Delete(key);
     return container_.End();
   }
-
   return iter;
 }
 
