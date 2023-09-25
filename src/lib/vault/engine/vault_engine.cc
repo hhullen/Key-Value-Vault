@@ -201,19 +201,6 @@ pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
   return returnable;
 }
 
-// pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments,
-//                                               size_t shift) {
-//   VaultData payload;
-//   for (size_t i = shift;
-//        i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
-//     Str err = payload.SetField(i - shift, arguments[i]);
-//     if (err != "") {
-//       return pair<VaultData, Str>(payload, err);
-//     }
-//   }
-//   return pair<VaultData, Str>(payload, Str());
-// }
-
 pair<size_t, Str> VaultEngine::ReadLifeTime(vector<Str>& arguments) {
   if (arguments.size() < 7) {
     return pair<size_t, Str>({0, ""});
