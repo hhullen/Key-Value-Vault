@@ -102,6 +102,7 @@ void VaultEngine::ExecuteUpdate(vector<Str>& arguments) {
 }
 
 void VaultEngine::ExecuteKeys(vector<Str>& arguments) {
+  arguments.clear();
   vault_->GetKeys(output_stream_);
 }
 
@@ -120,6 +121,43 @@ void VaultEngine::ExecuteRename(vector<Str>& arguments) {
   }
 }
 
+void VaultEngine::ExecuteTTL(vector<Str>& arguments) {
+  if (arguments.size() < 1) {
+    SendError("key have not been specified.");
+    return;
+  }
+  const Str& key = arguments[0];
+  pair<size_t, Str> out = vault_->GetTTL(key);
+  if (out.second != "") {
+    SendExecutionResult(out.second);
+  } else {
+    SendExecutionResult(std::to_string(out.first));
+  }
+}
+
+void VaultEngine::ExecuteFind(vector<Str>& arguments) {
+  if (arguments.size() < 1) {
+    SendError("No value field filled.");
+    return;
+  }
+
+  pair<VaultData, Str> to_find = ReadPayload(arguments, 0);
+  if (to_find.second != "") {
+    SendError(to_find.second);
+    return;
+  }
+  vault_->Find(output_stream_, to_find.first);
+}
+
+void VaultEngine::ExecuteShowAll(vector<Str>& arguments) {
+  arguments.clear();
+  vault_->ShowAll(output_stream_);
+}
+
+void VaultEngine::ExecuteUpload(vector<Str>& arguments) { arguments.clear(); }
+
+void VaultEngine::ExecuteExport(vector<Str>& arguments) { arguments.clear(); }
+
 optional<Str> VaultEngine::Yield() {
   if (output_stream_) {
     return output_stream_.Get();
@@ -134,7 +172,7 @@ void VaultEngine::StopStreaming() { output_stream_.Close(); }
 // */
 
 pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
-  pair<VaultData, Str> payload = ReadPayload(arguments);
+  pair<VaultData, Str> payload = ReadPayload(arguments, 1);
   if (payload.second != "") {
     return payload;
   }
@@ -148,11 +186,12 @@ pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
   return payload;
 }
 
-pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments) {
+pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments,
+                                              size_t shift) {
   VaultData payload;
-  for (size_t i = 1; i < arguments.size() && i - 1 < VaultData::kMaxFields;
-       ++i) {
-    Str err = payload.SetField(i - 1, arguments[i]);
+  for (size_t i = shift;
+       i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
+    Str err = payload.SetField(i - shift, arguments[i]);
     if (err != "") {
       return pair<VaultData, Str>(payload, err);
     }
@@ -177,7 +216,9 @@ pair<size_t, Str> VaultEngine::ReadLifeTime(vector<Str>& arguments) {
         {0, "unable to cast value \"" + arguments[7] +
                 "\" specified as \"EX\" value to type uint."});
   }
-  return pair<size_t, Str>(std::atoi(arguments[7].data()), "");
+  size_t lifetime = static_cast<size_t>(Timer().TimepointSec()) +
+                    static_cast<size_t>(std::atoi(arguments[7].data()));
+  return pair<size_t, Str>(lifetime, "");
 }
 
 void VaultEngine::SendError(const Str& message) {

@@ -1,6 +1,7 @@
 #ifndef SRC_LIB_VAULT_ENGINE_VAULT_ENGINE_H_
 #define SRC_LIB_VAULT_ENGINE_VAULT_ENGINE_H_
 
+#include <include/timer/timer.h>
 #include <lib/bin_tree/bin_tree.h>
 #include <lib/hash_table/hash_table.h>
 #include <lib/vault/engine/channel/channel.h>
@@ -30,11 +31,11 @@ class VaultEngine {
   void ExecuteUpdate(vector<Str> &arguments);
   void ExecuteKeys(vector<Str> &arguments);
   void ExecuteRename(vector<Str> &arguments);
-  void ExecuteTTL(vector<Str> &arguments) {}
-  void ExecuteFind(vector<Str> &arguments) {}
-  void ExecuteShowAll(vector<Str> &arguments) {}
-  void ExecuteUpload(vector<Str> &arguments) {}
-  void ExecuteExport(vector<Str> &arguments) {}
+  void ExecuteTTL(vector<Str> &arguments);
+  void ExecuteFind(vector<Str> &arguments);
+  void ExecuteShowAll(vector<Str> &arguments);
+  void ExecuteUpload(vector<Str> &arguments);
+  void ExecuteExport(vector<Str> &arguments);
   optional<Str> Yield();
   void StopStreaming();
 
@@ -43,7 +44,7 @@ class VaultEngine {
   Channel<Str> output_stream_;
 
   pair<VaultData, Str> AssembleVaultData(vector<Str> &arguments);
-  pair<VaultData, Str> ReadPayload(vector<Str> &arguments);
+  pair<VaultData, Str> ReadPayload(vector<Str> &arguments, size_t shift);
   pair<size_t, Str> ReadLifeTime(vector<Str> &arguments);
   void SendError(const Str &message);
   void SendExecutionResult(const Str &message);

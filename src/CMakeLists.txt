@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.22)
 
 project(KeyValueVault)
 
-# set(CODE_DIAG_FLAGS ${CODE_DIAG_FLAGS}
-#   --all-warnings --extra-warnings -Werror -Wpedantic -Wshadow \
-#   -Wdiv-by-zero -Wcomment -Wdeprecated -Wdouble-promotion -Winline \
-#   -Wconversion -Wdangling-else -Wnull-dereference -Wsign-conversion  \
-#   -Wunused-variable -Wunused-value -Wformat-security
-# )
+set(CODE_DIAG_FLAGS ${CODE_DIAG_FLAGS}
+  "--all-warnings --extra-warnings -Werror -Wpedantic -Wshadow \
+  -Wdiv-by-zero -Wcomment -Wdeprecated -Wdouble-promotion \
+  -Wconversion -Wdangling-else -Wnull-dereference -Wsign-conversion  \
+  -Wunused-variable -Wunused-value -Wformat-security"
+)
 
 set(TEST_FLAGS ${TEST_FLAGS}
     -lgtest

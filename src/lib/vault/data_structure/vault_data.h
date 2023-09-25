@@ -44,6 +44,7 @@ class VaultData {
   Str GetField(const size_t idx) { return row_[idx]; }
 
   VaultData& operator=(const VaultData& src) {
+    time_mark_ = src.time_mark_;
     for (size_t i = 0; i < kMaxFields; ++i) {
       if (src.row_[i] != "-") {
         row_[i] = src.row_[i];
@@ -52,7 +53,14 @@ class VaultData {
     return *this;
   }
 
-  bool operator==(const VaultData& src) { return true; }
+  bool operator==(const VaultData& src) {
+    for (size_t i = 0; i < kMaxFields; ++i) {
+      if (src.row_[i] != "-" && row_[i] != "-" && src.row_[i] != row_[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   Str GetRowAsString(char sep = '\t') {
     Str data_str;

@@ -133,7 +133,7 @@ typename BIN_TREE_DEF::NodePtr& BIN_TREE_DEF::SetNewNodeOnNull(
 
 TEMPLATE_DEF
 typename BIN_TREE_DEF::NodePtrPair BIN_TREE_DEF::Seek(const Key& key) {
-  NodePtr selector = root_, previous;
+  NodePtr selector = root_, previous = root_;
   for (; selector && selector != end_;) {
     previous = selector;
     const Key selected_key = KeyRetractor()(selector->value);

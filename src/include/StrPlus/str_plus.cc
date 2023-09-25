@@ -6,10 +6,10 @@ StrList StrPlus::Split(const Str& src, char delimiter) {
   StrList str_list;
   size_t size = src.size();
   for (size_t i = 0; i < size; ++i) {
-    if (src[i] != ' ') {
+    if (src[i] != delimiter) {
       const char* token_start_ptr = &(src.data())[i];
       size_t token_len = 0;
-      for (; i < size && src[i] != ' '; ++i, ++token_len) {
+      for (; i < size && src[i] != delimiter; ++i, ++token_len) {
       }
       str_list.emplace_back(Str(token_start_ptr, token_len));
     }

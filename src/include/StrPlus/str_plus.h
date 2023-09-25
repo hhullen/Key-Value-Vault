@@ -22,7 +22,7 @@ const std::map<Type, RegEx> regex_{
     {Type::Float, RegEx("^[-]{0,1}[0-9]+\\.[0-9]+(e[+-][0-9]+){0,1}$")},
 };
 
-StrList Split(const Str &src, char delimiter);
+StrList Split(const Str &src, char delimiter = ' ');
 void MakeUpper(Str &src);
 void MakeLower(Str &src);
 Str GetUpper(const Str &src);

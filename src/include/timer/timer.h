@@ -13,6 +13,7 @@ using Str = std::string;
 using Clock = std::chrono::steady_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 using Ms = std::chrono::milliseconds;
+using Sec = std::chrono::seconds;
 
 class DTime {
  public:
@@ -44,8 +45,7 @@ class DTime {
 
   Str GetFormatted(const long long value, const unsigned char width) {
     Str str(width, '0');
-    sprintf((char*)str.data(), Str("%0" + to_string(width) + "d").data(),
-            value);
+    sprintf(str.data(), Str("%0" + to_string(width) + "d").data(), value);
     return Str(str);
   }
 };
@@ -61,6 +61,18 @@ class Timer {
     long long elapded =
         std::chrono::duration_cast<Ms>(Clock::now() - start_).count();
     return DTime(elapded);
+  }
+
+  long long TimepointMs() {
+    return std::chrono::time_point_cast<Ms>(Clock::now())
+        .time_since_epoch()
+        .count();
+  }
+
+  long long TimepointSec() {
+    return std::chrono::time_point_cast<Sec>(Clock::now())
+        .time_since_epoch()
+        .count();
   }
 
  private:

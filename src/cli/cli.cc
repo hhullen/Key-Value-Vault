@@ -48,7 +48,7 @@ void CLI::SetupEngineType() {
   } else {
     throw invalid_argument(
         Str("Incorrent vault type have been specified.\n") +
-        Str("Available types: binary_tree/BT, hash_table/HT\n"));
+        Str("Available types: binary_tree or BT, hash_table or HT\n"));
   }
 }
 

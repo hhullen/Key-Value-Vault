@@ -27,10 +27,10 @@ class CLI {
   void Exec();
 
  private:
-  CMDArgs cmd_line_;
+  Thread stream_thread_;
   Executors executors_;
   VaultEngine engine_;
-  Thread stream_thread_;
+  CMDArgs cmd_line_;
 
   void SetupExecutors();
   void SetupEngineType();
