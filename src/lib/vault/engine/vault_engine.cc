@@ -133,13 +133,13 @@ void VaultEngine::ExecuteFind(vector<Str>& arguments) {
     SendError("No value field filled.");
     return;
   }
-
-  pair<VaultData, Str> to_find = ReadPayload(arguments, 0);
-  if (to_find.second != "") {
-    SendError(to_find.second);
+  VaultData to_find;
+  Str err = to_find.ReadPayload(arguments, 0);
+  if (err != "") {
+    SendError(err);
     return;
   }
-  vault_->Find(output_stream_, to_find.first);
+  vault_->Find(output_stream_, to_find);
 }
 
 void VaultEngine::ExecuteShowAll(vector<Str>& arguments) {
@@ -147,9 +147,31 @@ void VaultEngine::ExecuteShowAll(vector<Str>& arguments) {
   vault_->ShowAll(output_stream_);
 }
 
-void VaultEngine::ExecuteUpload(vector<Str>& arguments) { arguments.clear(); }
+void VaultEngine::ExecuteUpload(vector<Str>& arguments) {
+  if (arguments.size() < 1) {
+    SendError("No file path have been specified.");
+    return;
+  }
+  pair<size_t, Str> out = vault_->Upload(arguments[0]);
+  if (out.second != "") {
+    SendError(out.second + Str(" Uploaded: " + to_string(out.first)));
+  } else {
+    SendExecutionResult("OK " + to_string(out.first));
+  }
+}
 
-void VaultEngine::ExecuteExport(vector<Str>& arguments) { arguments.clear(); }
+void VaultEngine::ExecuteExport(vector<Str>& arguments) {
+  if (arguments.size() < 1) {
+    SendError("No file path have been specified.");
+    return;
+  }
+  pair<size_t, Str> out = vault_->Export(arguments[0]);
+  if (out.second != "") {
+    SendError(out.second);
+  } else {
+    SendExecutionResult("OK " + to_string(out.first));
+  }
+}
 
 optional<Str> VaultEngine::Yield() {
   if (output_stream_) {
@@ -165,31 +187,32 @@ void VaultEngine::StopStreaming() { output_stream_.Close(); }
 // */
 
 pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
-  pair<VaultData, Str> payload = ReadPayload(arguments, 1);
-  if (payload.second != "") {
-    return payload;
+  pair<VaultData, Str> returnable;
+  returnable.second = returnable.first.ReadPayload(arguments, 1);
+  if (returnable.second != "") {
+    return returnable;
   }
   pair<size_t, Str> life_time = ReadLifeTime(arguments);
   if (life_time.second != "") {
-    return pair<VaultData, Str>(VaultData(), life_time.second);
+    return pair<VaultData, Str>(returnable.first, life_time.second);
   }
-  payload.first.SetDeathTimeMark(life_time.first);
+  returnable.first.SetDeathTimeMark(life_time.first);
 
-  return payload;
+  return returnable;
 }
 
-pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments,
-                                              size_t shift) {
-  VaultData payload;
-  for (size_t i = shift;
-       i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
-    Str err = payload.SetField(i - shift, arguments[i]);
-    if (err != "") {
-      return pair<VaultData, Str>(payload, err);
-    }
-  }
-  return pair<VaultData, Str>(payload, Str());
-}
+// pair<VaultData, Str> VaultEngine::ReadPayload(vector<Str>& arguments,
+//                                               size_t shift) {
+//   VaultData payload;
+//   for (size_t i = shift;
+//        i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
+//     Str err = payload.SetField(i - shift, arguments[i]);
+//     if (err != "") {
+//       return pair<VaultData, Str>(payload, err);
+//     }
+//   }
+//   return pair<VaultData, Str>(payload, Str());
+// }
 
 pair<size_t, Str> VaultEngine::ReadLifeTime(vector<Str>& arguments) {
   if (arguments.size() < 7) {

@@ -47,7 +47,7 @@ void SelfBalancingBinarySearchTree::GetKeys(Channel<Str>& out) {
       iter = container_.Delete((*iter).first);
       continue;
     }
-    out.Send(Str(std::to_string(i) + ") ") + (*iter).first);
+    out.Send(Str(to_string(i) + ") ") + (*iter).first);
     ++iter;
     ++i;
   }
@@ -73,6 +73,9 @@ pair<size_t, Str> SelfBalancingBinarySearchTree::GetTTL(const Str& key) {
     return pair<size_t, Str>(0, Str("(null)"));
   }
   size_t timemark_ttl = (*iter).second.GetDeathTimeMark();
+  if (timemark_ttl == 0) {
+    return pair<size_t, Str>(0, Str("(infinite)"));
+  }
   size_t timemark_now = static_cast<size_t>(Timer().TimepointSec());
   return pair<size_t, Str>(timemark_ttl - timemark_now, Str());
 }
@@ -87,7 +90,7 @@ void SelfBalancingBinarySearchTree::Find(Channel<Str>& out,
       continue;
     }
     if ((*iter).second == value) {
-      out.Send(Str(std::to_string(i) + ") ") + (*iter).first);
+      out.Send(Str(to_string(i) + ") ") + (*iter).first);
       ++i;
     }
     ++iter;
@@ -100,7 +103,8 @@ void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) {
     size_t timemark = static_cast<size_t>((*iter).second.GetDeathTimeMark());
     if (!IsExpired(timemark)) {
       out.Send(
-          "> №  |  Фамилия  |  Имя  |  Год  |  Город  |  Количество "
+          "> №  |   Фамилия   |     Имя     |     Год     |    Город    |  "
+          "Количество "
           "коинов  |");
     }
   }
@@ -110,19 +114,47 @@ void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) {
       iter = container_.Delete((*iter).first);
       continue;
     }
-    out.Send(Str("> " + std::to_string(i) + "\t") +
-             (*iter).second.GetRowAsString());
+    out.Send(Str("> " + to_string(i) + "\t") + (*iter).second.GetRowAsString());
     ++i;
     ++iter;
   }
 }
 
 pair<size_t, Str> SelfBalancingBinarySearchTree::Upload(const Str& file_path) {
-  return pair<size_t, Str>(0, file_path);
+  ifstream file(file_path);
+  if (!file.is_open()) {
+    return pair<size_t, Str>(0, "can not open file \"" + file_path + "\".");
+  }
+  Str line;
+  size_t counter = 0, order = container_.Size();
+  for (; getline(file, line, '\n'); ++counter, ++order) {
+    StrList splitted = StrPlus::Split(line);
+    VaultData payload;
+    Str err = payload.ReadPayload(splitted, 0);
+    if (err != "") {
+      return pair<size_t, Str>(counter,
+                               Str("uploading have been interrupted: " + err));
+    }
+    container_.Emplace({Str("key" + to_string(order)), payload});
+  }
+  if (counter == 0) {
+    return pair<size_t, Str>(0,
+                             "can not upload from file \"" + file_path + "\".");
+  }
+  return pair<size_t, Str>(counter, Str());
 }
 
 pair<size_t, Str> SelfBalancingBinarySearchTree::Export(const Str& file_path) {
-  return pair<size_t, Str>(0, file_path);
+  ofstream file(file_path);
+  if (!file.is_open()) {
+    return pair<size_t, Str>(0, "can not open file \"" + file_path + "\".");
+  }
+  Container::Iterator iter = container_.Begin();
+  size_t counter = 0;
+  for (; iter != container_.End(); ++iter, ++counter) {
+    file << (*iter).second.GetRowAsString(' ') << "\n";
+  }
+  return pair<size_t, Str>(counter, Str());
 }
 
 // /*

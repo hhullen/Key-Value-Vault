@@ -1,10 +1,18 @@
 #ifndef SRC_LIB_BIN_TREE_BIN_TREE_H_
 #define SRC_LIB_BIN_TREE_BIN_TREE_H_
 
+#include <include/StrPlus/str_plus.h>
 #include <include/timer/timer.h>
 #include <lib/vault/vault_interface.h>
 
+#include <fstream>
+
 #include "container/binary_tree.h"
+
+using std::getline;
+using std::ifstream;
+using std::ofstream;
+using std::to_string;
 
 namespace hhullen {
 

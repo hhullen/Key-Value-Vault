@@ -26,6 +26,12 @@ class VaultData {
     validators_[4] = &VaultData::IsNum;
   }
 
+  void Clear() {
+    row_.clear();
+    row_.resize(kMaxFields, "-");
+    row_.shrink_to_fit();
+  }
+
   Str SetField(size_t idx, Str value) {
     if (idx >= kMaxFields) {
       return Str("invalid index.");
@@ -42,6 +48,18 @@ class VaultData {
   size_t GetDeathTimeMark() { return time_mark_; }
 
   Str GetField(const size_t idx) { return row_[idx]; }
+
+  Str ReadPayload(vector<Str>& arguments, size_t shift) {
+    Clear();
+    for (size_t i = shift;
+         i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
+      Str err = SetField(i - shift, arguments[i]);
+      if (err != "") {
+        return err;
+      }
+    }
+    return Str();
+  }
 
   VaultData& operator=(const VaultData& src) {
     time_mark_ = src.time_mark_;
