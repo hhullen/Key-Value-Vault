@@ -29,6 +29,10 @@ class VaultData {
     validators_[4] = &VaultData::IsNum;
   }
 
+  VaultData(const VaultData& src) { *this = src; }
+
+  VaultData(VaultData&& src) = default;
+
   void Clear() {
     row_.clear();
     row_.resize(kMaxFields, "-");
@@ -52,7 +56,7 @@ class VaultData {
 
   Str GetField(const size_t idx) { return row_[idx]; }
 
-  Str ReadPayload(vector<Str>& arguments, size_t shift) {
+  Str ReadPayload(const vector<Str>& arguments, size_t shift) {
     Clear();
     for (size_t i = shift;
          i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
@@ -66,6 +70,10 @@ class VaultData {
 
   VaultData& operator=(const VaultData& src) {
     time_mark_ = src.time_mark_;
+    if (row_.size() != src.row_.size()) {
+      row_.resize(src.row_.size(), "-");
+      row_.shrink_to_fit();
+    }
     for (size_t i = 0; i < kMaxFields; ++i) {
       if (src.row_[i] != "-") {
         row_[i] = src.row_[i];

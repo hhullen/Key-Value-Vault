@@ -19,10 +19,10 @@ CHECK_FILES=$ \
 			lib/vault/engine/*.cc \
 			lib/vault/data_structure/*.h \
 			lib/vault/data_structure/*.cc \
-			lib/vault/engine/channel/channel.h \
+			lib/vault/engine/channel/channel.h
 TO_DELETE_FILES=*.o *.a *.out *.dSYM *.gch *.gcda \
 				*.gcno .DS_Store $(CLANG_FILE) *.info
-TO_DELETE_FOLDERS=$(BUILD_DIR) report *.dSYM
+TO_DELETE_FOLDERS=$(BUILD_DIR) $(BUILD_DIR)_tests report *.dSYM
 
 
 # Crossplatform specs
@@ -52,6 +52,7 @@ ifeq ($(OS), Darwin)
 	COPY=cp
 endif
 
+# Targets
 .PHONY: all check tests clean gcov_report cli test_cli leaks
 
 all: clean tests cli check
@@ -62,16 +63,16 @@ check:
 	clang-format -i --style=Google $(CHECK_FILES)
 	clang-format -n --style=Google $(CHECK_FILES)
 
-tests:
-	$(MAKEDIR) $(BUILD_DIR)
-	cmake -S . -B $(BUILD_DIR) -D BUILD_MODE=test
-	cd $(BUILD_DIR) && make
+tests: 
+	$(MAKEDIR) $(BUILD_DIR)_tests
+	cmake -S . -B $(BUILD_DIR)_tests -D BUILD_MODE=test
+	cd $(BUILD_DIR)_tests && make && ./KeyValueVault_tests
 
 gcov_report: gcov_build
 	lcov --ignore-errors mismatch --ignore-errors empty -t "test" -o test.info -c -d .
 	genhtml --ignore-errors mismatch --ignore-errors empty -o report test.info
 
-gcov_build: 
+gcov_build:
 	$(MAKEDIR) $(BUILD_DIR)
 	cmake -S . -B $(BUILD_DIR) -D BUILD_MODE=gcov_build
 	cd $(BUILD_DIR) && make

@@ -10,6 +10,7 @@ namespace hhullen {
 
 using Str = std::string;
 using std::pair;
+using Err = std::runtime_error;
 
 class IVault {
  public:

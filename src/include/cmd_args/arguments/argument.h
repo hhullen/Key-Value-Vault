@@ -18,7 +18,6 @@ class Argument {
   Argument() = delete;
   Argument(const Str &name = "default-init", Argument::Type type = Type::String,
            const Str &help = "argument");
-  ~Argument();
 
   void ReadArgument(const Str &arg);
   const Str GetValue() const;
@@ -42,8 +41,6 @@ Argument::Argument(const Str &name, Argument::Type type, const Str &help)
     : name_(name), help_(help), type_(type) {
   InitializeRegex();
 }
-
-Argument::~Argument() {}
 
 void Argument::ReadArgument(const Str &arg) {
   ValidateArg(arg, type_);
