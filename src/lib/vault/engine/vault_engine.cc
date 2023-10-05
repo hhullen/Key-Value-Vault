@@ -15,15 +15,15 @@ void VaultEngine::ExecuteSet(vector<Str>& arguments) {
     SendError("No key or at least one value field filled.");
     return;
   }
-  pair<VaultData, Str> vault_data = AssembleVaultData(arguments);
-  if (vault_data.second != "") {
-    SendError(vault_data.second);
+  pair<VaultData, Err> vault_data = AssembleVaultData(arguments);
+  if (vault_data.second.HasError()) {
+    SendError(vault_data.second.What());
     return;
   }
   const Str& key = arguments[0];
-  Str err = vault_->Set(key, vault_data.first);
-  if (err != "") {
-    SendError(err);
+  Err err = vault_->Set(key, vault_data.first);
+  if (err.HasError()) {
+    SendError(err.What());
   } else {
     SendExecutionResult("OK");
   }
@@ -36,9 +36,9 @@ void VaultEngine::ExecuteGet(vector<Str>& arguments) {
   }
   for (size_t i = 0; i < arguments.size(); ++i) {
     const Str& key = arguments[i];
-    pair<VaultData, Str> found = vault_->Get(key);
-    if (found.second != "") {
-      SendExecutionResult(found.second);
+    pair<VaultData, Err> found = vault_->Get(key);
+    if (found.second.HasError()) {
+      SendExecutionResult(found.second.What());
     } else {
       SendExecutionResult(found.first.GetRowAsString());
     }
@@ -80,15 +80,15 @@ void VaultEngine::ExecuteUpdate(vector<Str>& arguments) {
     SendError("No key or at least one value field filled.");
     return;
   }
-  pair<VaultData, Str> vault_data = AssembleVaultData(arguments);
-  if (vault_data.second != "") {
-    SendError(vault_data.second);
+  pair<VaultData, Err> vault_data = AssembleVaultData(arguments);
+  if (vault_data.second.HasError()) {
+    SendError(vault_data.second.What());
     return;
   }
   const Str& key = arguments[0];
-  Str err = vault_->Update(key, vault_data.first);
-  if (err != "") {
-    SendError(err);
+  Err err = vault_->Update(key, vault_data.first);
+  if (err.HasError()) {
+    SendError(err.What());
   } else {
     SendExecutionResult("OK");
   }
@@ -106,9 +106,9 @@ void VaultEngine::ExecuteRename(vector<Str>& arguments) {
   }
   const Str& key_to_be_renamed = arguments[0];
   const Str& key_renamer = arguments[1];
-  Str err = vault_->Rename(key_to_be_renamed, key_renamer);
-  if (err != "") {
-    SendError(err);
+  Err err = vault_->Rename(key_to_be_renamed, key_renamer);
+  if (err.HasError()) {
+    SendError(err.What());
   } else {
     SendExecutionResult("OK");
   }
@@ -120,9 +120,9 @@ void VaultEngine::ExecuteTTL(vector<Str>& arguments) {
     return;
   }
   const Str& key = arguments[0];
-  pair<size_t, Str> out = vault_->GetTTL(key);
-  if (out.second != "") {
-    SendExecutionResult(out.second);
+  pair<size_t, Err> out = vault_->GetTTL(key);
+  if (out.second.HasError()) {
+    SendExecutionResult(out.second.What());
   } else {
     SendExecutionResult(std::to_string(out.first));
   }
@@ -134,9 +134,9 @@ void VaultEngine::ExecuteFind(vector<Str>& arguments) {
     return;
   }
   VaultData to_find;
-  Str err = to_find.ReadPayload(arguments, 0);
-  if (err != "") {
-    SendError(err);
+  Err err = to_find.ReadPayload(arguments, 0);
+  if (err.HasError()) {
+    SendError(err.What());
     return;
   }
   vault_->Find(output_stream_, to_find);
@@ -152,9 +152,9 @@ void VaultEngine::ExecuteUpload(vector<Str>& arguments) {
     SendError("No file path have been specified.");
     return;
   }
-  pair<size_t, Str> out = vault_->Upload(arguments[0]);
-  if (out.second != "") {
-    SendError(out.second + Str(" Uploaded: " + to_string(out.first)));
+  pair<size_t, Err> out = vault_->Upload(arguments[0]);
+  if (out.second.HasError()) {
+    SendError(out.second.What() + Str(" Uploaded: " + to_string(out.first)));
   } else {
     SendExecutionResult("OK " + to_string(out.first));
   }
@@ -165,9 +165,9 @@ void VaultEngine::ExecuteExport(vector<Str>& arguments) {
     SendError("No file path have been specified.");
     return;
   }
-  pair<size_t, Str> out = vault_->Export(arguments[0]);
-  if (out.second != "") {
-    SendError(out.second);
+  pair<size_t, Err> out = vault_->Export(arguments[0]);
+  if (out.second.HasError()) {
+    SendError(out.second.What());
   } else {
     SendExecutionResult("OK " + to_string(out.first));
   }
@@ -186,41 +186,39 @@ void VaultEngine::StopStreaming() { output_stream_.Close(); }
 //     private methods
 // */
 
-pair<VaultData, Str> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
-  pair<VaultData, Str> returnable;
+pair<VaultData, Err> VaultEngine::AssembleVaultData(vector<Str>& arguments) {
+  pair<VaultData, Err> returnable;
   returnable.second = returnable.first.ReadPayload(arguments, 1);
-  if (returnable.second != "") {
+  if (returnable.second.HasError()) {
     return returnable;
   }
-  pair<size_t, Str> life_time = ReadLifeTime(arguments);
-  if (life_time.second != "") {
-    return pair<VaultData, Str>(returnable.first, life_time.second);
+  pair<size_t, Err> life_time = ReadLifeTime(arguments);
+  if (life_time.second.HasError()) {
+    return {returnable.first, life_time.second};
   }
   returnable.first.SetDeathTimeMark(life_time.first);
 
   return returnable;
 }
 
-pair<size_t, Str> VaultEngine::ReadLifeTime(vector<Str>& arguments) {
+pair<size_t, Err> VaultEngine::ReadLifeTime(vector<Str>& arguments) {
   if (arguments.size() < 7) {
-    return pair<size_t, Str>({0, ""});
+    return {0, Err()};
   }
   if (arguments[6] != "EX") {
-    return pair<size_t, Str>(
-        {0, "\"EX\" as lifetime specifier expected, but got \"" + arguments[6] +
-                "\"."});
+    return {0, Err("\"EX\" as lifetime specifier expected, but got \"" +
+                   arguments[6] + "\".")};
   }
   if (arguments.size() < 8) {
-    return pair<size_t, Str>({0, "\"EX\" with no value have been specified."});
+    return {0, Err("\"EX\" with no value have been specified.")};
   }
   if (!StrPlus::IsValid(arguments[7], StrPlus::Type::UInt)) {
-    return pair<size_t, Str>(
-        {0, "unable to cast value \"" + arguments[7] +
-                "\" specified as \"EX\" value to type uint."});
+    return {0, Err("unable to cast value \"" + arguments[7] +
+                   "\" specified as \"EX\" value to type uint.")};
   }
   size_t lifetime = static_cast<size_t>(Timer().TimepointSec()) +
                     static_cast<size_t>(std::atoi(arguments[7].data()));
-  return pair<size_t, Str>(lifetime, "");
+  return {lifetime, Err()};
 }
 
 void VaultEngine::SendError(const Str& message) {

@@ -31,6 +31,7 @@ void CLI::SetupExecutors() {
   executors_["FIND"] = &VaultEngine::ExecuteFind;
   executors_["SHOWALL"] = &VaultEngine::ExecuteShowAll;
   executors_["UPLOAD"] = &VaultEngine::ExecuteUpload;
+  executors_["IMPORT"] = &VaultEngine::ExecuteUpload;
   executors_["EXPORT"] = &VaultEngine::ExecuteExport;
 }
 
@@ -66,7 +67,7 @@ void CLI::ListenStdin() {
     getline(cin, arguments);
     ExecuteMethod(method, arguments);
   }
-  std::cout << "END LISTENING CORRECTLY";
+  std::cout << "END LISTENING";
 }
 
 void CLI::ExecuteMethod(Str method, Str arguments) {
@@ -79,7 +80,7 @@ void CLI::RunStdoutStreaming() {
   for (; output; output = engine_.Yield()) {
     cout << *output << "\n";
   }
-  std::cout << "END STREAMING  CORRECTLY\n";
+  std::cout << "END STREAMING\n";
 }
 
 }  // namespace hhullen

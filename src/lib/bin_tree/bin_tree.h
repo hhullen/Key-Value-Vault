@@ -27,18 +27,18 @@ class SelfBalancingBinarySearchTree : public IVault {
   using Container =
       BinTree<pair<Str, VaultData>, Str, PairKeyRetractor<Str, VaultData>>;
 
-  Str Set(const Str& key, const VaultData& value);
-  pair<VaultData, Str> Get(const Str& key);
+  Err Set(const Str& key, const VaultData& value);
+  pair<VaultData, Err> Get(const Str& key);
   bool IsExists(const Str& key);
   bool Delete(const Str& key);
-  Str Update(const Str& key, const VaultData& value);
+  Err Update(const Str& key, const VaultData& value);
   void GetKeys(Channel<Str>& out);
-  Str Rename(const Str& key_old, const Str& key_new);
-  pair<size_t, Str> GetTTL(const Str& key);
+  Err Rename(const Str& key_old, const Str& key_new);
+  pair<size_t, Err> GetTTL(const Str& key);
   void Find(Channel<Str>& out, const VaultData& value);
   void ShowAll(Channel<Str>& out);
-  pair<size_t, Str> Upload(const Str& file_path);
-  pair<size_t, Str> Export(const Str& file_path);
+  pair<size_t, Err> Upload(const Str& file_path);
+  pair<size_t, Err> Export(const Str& file_path);
 
  private:
   Container container_;

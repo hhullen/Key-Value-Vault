@@ -43,8 +43,8 @@ class VaultEngine {
   VaultPtr vault_;
   Channel<Str> output_stream_;
 
-  pair<VaultData, Str> AssembleVaultData(vector<Str> &arguments);
-  pair<size_t, Str> ReadLifeTime(vector<Str> &arguments);
+  pair<VaultData, Err> AssembleVaultData(vector<Str> &arguments);
+  pair<size_t, Err> ReadLifeTime(vector<Str> &arguments);
   void SendError(const Str &message);
   void SendExecutionResult(const Str &message);
 };

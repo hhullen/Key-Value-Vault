@@ -9,6 +9,16 @@
 
 namespace hhullen {
 
+class Err {
+ public:
+  Err(const Str message = "") : message_{message} {}
+  Str What() { return message_; }
+  bool HasError() { return message_ != ""; }
+
+ private:
+  Str message_;
+};
+
 using Str = std::string;
 using std::vector;
 
@@ -39,15 +49,15 @@ class VaultData {
     row_.shrink_to_fit();
   }
 
-  Str SetField(size_t idx, Str value) {
+  Err SetField(size_t idx, Str value) {
     if (idx >= kMaxFields) {
-      return Str("invalid index.");
+      return Err("invalid index.");
     }
     if (validators_[idx] && !(this->*(validators_[idx]))(value)) {
-      return Str("unable to cast value \"" + value + "\" to type uint.");
+      return Err("unable to cast value \"" + value + "\" to type uint.");
     }
     row_[idx] = value;
-    return Str();
+    return Err();
   }
 
   void SetDeathTimeMark(size_t seconds) { time_mark_ = seconds; }
@@ -56,16 +66,16 @@ class VaultData {
 
   Str GetField(const size_t idx) { return row_[idx]; }
 
-  Str ReadPayload(const vector<Str>& arguments, size_t shift) {
+  Err ReadPayload(const vector<Str>& arguments, size_t shift) {
     Clear();
     for (size_t i = shift;
          i < arguments.size() && i - shift < VaultData::kMaxFields; ++i) {
-      Str err = SetField(i - shift, arguments[i]);
-      if (err != "") {
-        return err;
+      Err err = SetField(i - shift, arguments[i]);
+      if (err.HasError()) {
+        return err.What();
       }
     }
-    return Str();
+    return Err();
   }
 
   VaultData& operator=(const VaultData& src) {
