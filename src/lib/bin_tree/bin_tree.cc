@@ -84,7 +84,7 @@ void SelfBalancingBinarySearchTree::Find(Channel<Str>& out,
                                          const VaultData& value) {
   Container::Iterator iter = container_.Begin();
   for (size_t i = 1; iter != container_.End();) {
-    size_t timemark = static_cast<size_t>((*iter).second.GetDeathTimeMark());
+    size_t timemark = (*iter).second.GetDeathTimeMark();
     if (IsExpired(timemark)) {
       iter = container_.Delete((*iter).first);
       continue;
@@ -100,13 +100,13 @@ void SelfBalancingBinarySearchTree::Find(Channel<Str>& out,
 void SelfBalancingBinarySearchTree::ShowAll(Channel<Str>& out) {
   Container::Iterator iter = container_.Begin();
   if (iter != container_.End()) {
-    size_t timemark = static_cast<size_t>((*iter).second.GetDeathTimeMark());
+    size_t timemark = (*iter).second.GetDeathTimeMark();
     if (!IsExpired(timemark)) {
       out.Send(VaultData::kHeader);
     }
   }
   for (size_t i = 1; iter != container_.End();) {
-    size_t timemark = static_cast<size_t>((*iter).second.GetDeathTimeMark());
+    size_t timemark = (*iter).second.GetDeathTimeMark();
     if (IsExpired(timemark)) {
       iter = container_.Delete((*iter).first);
       continue;
