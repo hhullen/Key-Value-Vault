@@ -59,12 +59,11 @@ void CLI::ListenStdin() {
   cin >> method;
   StrPlus::MakeUpper(method);
   for (; method != "EXIT"; cin >> method, StrPlus::MakeUpper(method)) {
+    getline(cin, arguments);
     if (executors_.find(method) == executors_.end()) {
       cout << "> Unknown method: \"" << method << "\"\n";
-      getline(cin, arguments);
       continue;
     }
-    getline(cin, arguments);
     ExecuteMethod(method, arguments);
   }
   std::cout << "END LISTENING";
