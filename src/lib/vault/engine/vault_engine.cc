@@ -4,9 +4,9 @@ namespace hhullen {
 
 void VaultEngine::Init(VaultType vault_type) {
   if (vault_type == VaultType::BIN_TREE) {
-    vault_.reset(new SelfBalancingBinarySearchTree());
+    vault_ = make_unique<SelfBalancingBinarySearchTree>();
   } else if (vault_type == VaultType::HASH_TABLE) {
-    // vault = VaultPtr(new HashTable());
+    // vault_ = make_unique<HashTable>();
   }
 }
 

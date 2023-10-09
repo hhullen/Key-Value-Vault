@@ -12,6 +12,7 @@
 #include <optional>
 
 namespace hhullen {
+using std::make_unique;
 using std::optional;
 
 class VaultEngine {
